@@ -110,11 +110,11 @@ A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
 O código deste repositório (Dockerfile, entrypoint, patch, documentação) é [MIT](LICENSE). A imagem de base é a do
 wyoming-faster-whisper, MIT. Ver [THIRD_PARTY.md](THIRD_PARTY.md).
 
-⚠️ **A ficha do modelo CAMÕES não declara licença** (verificado a 2026-10-16). Por isso a imagem **nunca inclui os
-pesos**: é o seu contentor que os descarrega do Hugging Face no primeiro arranque. A ficha indica como usos previstos
+⚠️ **As características do modelo CAMÕES não declaram licença** (verificado a 2026-10-16). Por isso a imagem **nunca inclui os
+pesos**: é o seu contentor que os descarrega do Hugging Face no primeiro arranque. As características indicam como usos previstos
 a transcrição de português europeu, investigação e avaliação de ASR, demonstrações e protótipos; para outros usos,
 confirme os termos com os autores.
 
 O CAMÕES é do projeto AMALIA e do benchmark CAMÕES (ASRU 2025) — a citação está no
-[ficha do modelo](https://huggingface.co/amalia-llm/CAMOES-whisper-asr). Este projeto não é afiliado ao AMALIA, à Open
+[características do modelo](https://huggingface.co/amalia-llm/CAMOES-whisper-asr). Este projeto não é afiliado ao AMALIA, à Open
 Home Foundation nem à OpenAI.
