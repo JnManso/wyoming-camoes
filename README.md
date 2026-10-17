@@ -1,23 +1,23 @@
 # wyoming-camoes
 
-Speech-to-text in **European Portuguese** for Home Assistant: the [CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr)
-Whisper model from the [AMALIA](https://amaliallm.pt) project, served over [Wyoming](https://github.com/OHF-Voice/wyoming) by the
-official [wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper) server.
+Speech-to-text in **European Portuguese** for Home Assistant: the
+[CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr) model (Whisper fine-tuned by the [AMALIA](https://amaliallm.pt)
+project), served by the official [wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper) over the
+[Wyoming](https://github.com/OHF-Voice/wyoming) protocol.
 
 [Português](README.pt.md)
 
 ## What it is
 
-Generic Whisper leans towards Brazilian Portuguese. CAMÕES is Whisper large-v3 fine-tuned for European Portuguese: where
-the original large-v3 heard *estores* ("blinds") as *toques*, *torres* or *estouros*, CAMÕES got it right in every test
-phrase.
+Generic Whisper leans towards Brazilian Portuguese. CAMÕES is Whisper large-v3 fine-tuned for European Portuguese: the
+original large-v3 hears *estores* ("blinds") as *toques*, *torres* or *estouros*; CAMÕES gets it right.
 
 This image is the official server (`rhasspy/wyoming-whisper:3.8.1`) with two additions:
 
-- **First start**: downloads CAMÕES from Hugging Face, converts it to CTranslate2 int8 with the converter already in the
-  image, and keeps only the converted model (1.5 GB) in the `/data` volume. Later starts take seconds.
-- **No timestamps**: with timestamps on (faster-whisper's default) CAMÕES writes junk before the first word. One argument is
-  added to the server's file at build time ([`patches/without_timestamps.py`](patches/without_timestamps.py)).
+- **First start**: downloads CAMÕES from Hugging Face, converts it to CTranslate2 int8 and keeps only the converted model
+  (1.5 GB) in the `/data` volume. Later starts take seconds.
+- **No timestamps**: with timestamps on (faster-whisper's default) CAMÕES writes junk before the first word. The build
+  adds `without_timestamps=True` to the server ([patch](patches/without_timestamps.py)).
 
 Defaults: Portuguese, int8, beam size 1.
 
@@ -48,15 +48,15 @@ firewall applies.
 ## Configuration
 
 Every server option `--some-option` can be set with the variable `WYO_WHISPER_SOME_OPTION`; command-line arguments win
-over variables.
+over variables. The useful ones:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `WYO_WHISPER_CPU_THREADS` | `4` | CPU threads for inference |
-| `WYO_WHISPER_URI` | `tcp://0.0.0.0:10300` | listen address; the health check follows this variable, not a `--uri` argument |
-| `WYO_WHISPER_BEAM_SIZE` | `1` | beam size |
-| `WYO_WHISPER_LANGUAGE` | `pt` | language |
-| `WYO_WHISPER_COMPUTE_TYPE` | `int8` | CTranslate2 compute type |
+| `WYO_WHISPER_CPU_THREADS` | `4` | threads for inference; use the machine's physical cores |
+| `WYO_WHISPER_URI` | `tcp://0.0.0.0:10300` | listen address (the health check follows this variable, not a `--uri` argument) |
+| `WYO_WHISPER_BEAM_SIZE` | `1` | 1 is the fastest |
+| `WYO_WHISPER_LANGUAGE` | `pt` | `auto` detects the language |
+| `WYO_WHISPER_COMPUTE_TYPE` | `int8` | CTranslate2 compute type; int8 for CPU |
 
 First-start variables:
 
@@ -64,8 +64,6 @@ First-start variables:
 |---|---|---|
 | `CAMOES_SOURCE` | `amalia-llm/CAMOES-whisper-asr` | model repository on Hugging Face |
 | `CAMOES_QUANTIZATION` | `int8` | conversion quantization |
-| `CAMOES_MODEL_DIR` | `/data/camoes-ct2-<quantization>` | where the converted model is kept |
-| `CAMOES_PREPROCESSOR_SOURCE` | `openai/whisper-large-v3` | base model; source of the tokenizer and preprocessor config |
 | `CAMOES_KEEP_SOURCE` | `0` | `1` keeps the downloaded weights in `/data/hub` |
 
 ## Measurements

@@ -1,26 +1,23 @@
 # wyoming-camoes
 
-Reconhecimento de voz em **português europeu** para o Home Assistant: o modelo Whisper
-[CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr) do projecto [AMALIA](https://amaliallm.pt), servido pelo
-servidor oficial [wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper) através do protocolo
+Reconhecimento de voz em **português europeu** para o Home Assistant: o modelo
+[CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr) (Whisper afinado pelo projecto [AMALIA](https://amaliallm.pt)),
+servido pelo [wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper) oficial através do protocolo
 [Wyoming](https://github.com/OHF-Voice/wyoming).
 
 [English](README.md)
 
 ## O que é
 
-O Whisper genérico tende para o português do Brasil. O CAMÕES é o Whisper large-v3 afinado para português europeu: onde
-o large-v3 original ouviu *estores* como *toques*, *torres* ou *estouros*, o CAMÕES acertou em todas as frases de
-teste.
+O Whisper genérico tende para o português do Brasil. O CAMÕES é o Whisper large-v3 afinado para português europeu: o
+large-v3 original ouve *estores* como *toques*, *torres* ou *estouros*; o CAMÕES acerta.
 
 Esta imagem é o servidor oficial (`rhasspy/wyoming-whisper:3.8.1`) com duas adições:
 
-- **Primeiro arranque**: descarrega o CAMÕES do Hugging Face, converte-o para CTranslate2 int8 com o conversor que a
-  imagem já traz e guarda apenas o modelo convertido (1,5 GB) no volume `/data`. Os arranques seguintes demoram
-  segundos.
+- **Primeiro arranque**: descarrega o CAMÕES do Hugging Face, converte-o para CTranslate2 int8 e guarda apenas o modelo
+  convertido (1,5 GB) no volume `/data`. Os arranques seguintes demoram segundos.
 - **Sem timestamps**: com timestamps (a predefinição do faster-whisper), o CAMÕES escreve lixo antes da primeira
-  palavra. Um argumento é acrescentado ao ficheiro do servidor durante o build
-  ([`patches/without_timestamps.py`](patches/without_timestamps.py)).
+  palavra. O build acrescenta `without_timestamps=True` ao servidor ([patch](patches/without_timestamps.py)).
 
 Predefinições: português, int8, beam size 1.
 
@@ -41,6 +38,8 @@ O primeiro arranque descarrega cerca de 6 GB e precisa de 8 GB de RAM livres dur
 
 ## Ligar ao Home Assistant
 
+Menus na versão inglesa:
+
 1. **Settings → Devices & services → Add integration → Wyoming Protocol**, com o IP do servidor e a porta `10300`.
 2. **Settings → Voice assistants** → o seu assistente → **Speech-to-text**: a nova entidade, língua `pt`.
 
@@ -51,15 +50,15 @@ aplica-se a firewall do anfitrião.
 ## Configuração
 
 Cada opção do servidor `--alguma-opcao` pode ser definida pela variável `WYO_WHISPER_ALGUMA_OPCAO`; os argumentos da
-linha de comandos têm prioridade sobre as variáveis.
+linha de comandos têm prioridade sobre as variáveis. As úteis:
 
 | Variável | Predefinição | Para quê |
 |---|---|---|
-| `WYO_WHISPER_CPU_THREADS` | `4` | threads de CPU para a inferência |
-| `WYO_WHISPER_URI` | `tcp://0.0.0.0:10300` | endereço de escuta; o healthcheck segue esta variável, não um argumento `--uri` |
-| `WYO_WHISPER_BEAM_SIZE` | `1` | beam size |
-| `WYO_WHISPER_LANGUAGE` | `pt` | língua |
-| `WYO_WHISPER_COMPUTE_TYPE` | `int8` | tipo de cálculo do CTranslate2 |
+| `WYO_WHISPER_CPU_THREADS` | `4` | threads para a inferência; use os núcleos físicos da máquina |
+| `WYO_WHISPER_URI` | `tcp://0.0.0.0:10300` | endereço de escuta (o healthcheck segue esta variável, não um argumento `--uri`) |
+| `WYO_WHISPER_BEAM_SIZE` | `1` | 1 é o mais rápido |
+| `WYO_WHISPER_LANGUAGE` | `pt` | `auto` detecta a língua |
+| `WYO_WHISPER_COMPUTE_TYPE` | `int8` | tipo de cálculo do CTranslate2; int8 para CPU |
 
 Variáveis do primeiro arranque:
 
@@ -67,8 +66,6 @@ Variáveis do primeiro arranque:
 |---|---|---|
 | `CAMOES_SOURCE` | `amalia-llm/CAMOES-whisper-asr` | repositório do modelo no Hugging Face |
 | `CAMOES_QUANTIZATION` | `int8` | quantização da conversão |
-| `CAMOES_MODEL_DIR` | `/data/camoes-ct2-<quantização>` | onde fica o modelo convertido |
-| `CAMOES_PREPROCESSOR_SOURCE` | `openai/whisper-large-v3` | modelo base; origem do tokenizer e da configuração do pré-processador |
 | `CAMOES_KEEP_SOURCE` | `0` | `1` mantém os pesos descarregados em `/data/hub` |
 
 ## Medições
