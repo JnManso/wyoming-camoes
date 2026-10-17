@@ -19,7 +19,7 @@ This image is the official server (`rhasspy/wyoming-whisper:3.8.1`) with two add
 - **No timestamps**: with timestamps on (faster-whisper's default) CAMÕES writes junk before the first word. The build
   adds `without_timestamps=True` to the server ([patch](patches/without_timestamps.py)).
 
-Defaults: Portuguese, int8, beam size 1.
+Defaults: Portuguese, int8, beam size 1. Runs on the CPU; no GPU needed.
 
 ## Quick start
 
@@ -64,7 +64,7 @@ First-start variables:
 |---|---|---|
 | `CAMOES_SOURCE` | `amalia-llm/CAMOES-whisper-asr` | model repository on Hugging Face |
 | `CAMOES_QUANTIZATION` | `int8` | conversion quantization |
-| `CAMOES_KEEP_SOURCE` | `0` | `1` keeps the downloaded weights in `/data/hub` |
+| `CAMOES_KEEP_SOURCE` | `0` | `1` keeps the 6 GB download in `/data/hub` |
 
 ## Measurements
 
@@ -79,19 +79,20 @@ The image is built for `amd64` and `arm64`; only `amd64` has been tested.
 
 ## Updating
 
-- **New version of the official server**: change `WYOMING_WHISPER_VERSION` in the [Dockerfile](Dockerfile) and rebuild.
-  The build adds `without_timestamps` to the new version's file again; it stops with a message if the file changed and
-  the patch no longer fits, and does nothing if upstream already passes the option.
-- **Test the first start** on an empty volume before switching, because the conversion depends on the image's
-  transformers and CTranslate2 versions:
+- **New version of the official server**: change `WYOMING_WHISPER_VERSION` in the [Dockerfile](Dockerfile) and build
+  (`docker compose build`, or `docker build -t wyoming-camoes .`). The build adds `without_timestamps` to the new
+  version's file again; it stops with a message if the file changed and the patch no longer fits, and does nothing if
+  upstream already passes the option.
+- **Test the first start** before switching, in a throwaway container with no volume, because the conversion depends
+  on the image's transformers and CTranslate2 versions:
 
   ```bash
-  docker run --rm -p 10301:10300 wyoming-camoes
+  docker run --rm wyoming-camoes
   ```
 
   Wait for `INFO:__main__:Ready`.
-- **Switch**: `docker compose up -d` with the new image. The volume keeps the converted model: nothing is downloaded or
-  converted again.
+- **Switch**: `docker compose up -d` (without compose: `docker rm -f wyoming-camoes`, then the quick start's `docker
+  run`). The volume keeps the converted model: nothing is downloaded or converted again.
 - **New CAMÕES release**: delete the converted model and restart; the next start converts again (6 GB download, 8 GB
   RAM):
 

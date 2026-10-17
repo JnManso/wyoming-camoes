@@ -19,3 +19,5 @@ services:
       - data:/data
 volumes:
   data:
+    # The same volume the quick start's `docker run` uses, so the two paths are interchangeable.
+    name: wyoming-camoes

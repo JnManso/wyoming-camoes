@@ -19,7 +19,7 @@ Esta imagem é o servidor oficial (`rhasspy/wyoming-whisper:3.8.1`) com duas adi
 - **Sem timestamps**: com timestamps (a predefinição do faster-whisper), o CAMÕES escreve lixo antes da primeira
   palavra. O build acrescenta `without_timestamps=True` ao servidor ([patch](patches/without_timestamps.py)).
 
-Predefinições: português, int8, beam size 1.
+Predefinições: português, int8, beam size 1. Corre na CPU; não usa GPU.
 
 ## Início rápido
 
@@ -38,7 +38,7 @@ O primeiro arranque descarrega cerca de 6 GB e precisa de 8 GB de RAM livres dur
 
 ## Ligar ao Home Assistant
 
-Menus na versão inglesa:
+No Home Assistant (menus na versão inglesa):
 
 1. **Settings → Devices & services → Add integration → Wyoming Protocol**, com o IP do servidor e a porta `10300`.
 2. **Settings → Voice assistants** → o seu assistente → **Speech-to-text**: a nova entidade, língua `pt`.
@@ -66,7 +66,7 @@ Variáveis do primeiro arranque:
 |---|---|---|
 | `CAMOES_SOURCE` | `amalia-llm/CAMOES-whisper-asr` | repositório do modelo no Hugging Face |
 | `CAMOES_QUANTIZATION` | `int8` | quantização da conversão |
-| `CAMOES_KEEP_SOURCE` | `0` | `1` mantém os pesos descarregados em `/data/hub` |
+| `CAMOES_KEEP_SOURCE` | `0` | `1` mantém os 6 GB descarregados em `/data/hub` |
 
 ## Medições
 
@@ -81,19 +81,20 @@ A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
 
 ## Actualizar
 
-- **Versão nova do servidor oficial**: altere `WYOMING_WHISPER_VERSION` no [Dockerfile](Dockerfile) e reconstrua. O
-  build volta a acrescentar o `without_timestamps` ao ficheiro da versão nova; pára com uma mensagem se o ficheiro mudou
-  e o patch já não encaixa, e não faz nada se a versão nova já passar a opção.
-- **Teste o primeiro arranque** com um volume vazio antes de trocar, porque a conversão depende das versões do
-  transformers e do CTranslate2 da imagem:
+- **Versão nova do servidor oficial**: altere `WYOMING_WHISPER_VERSION` no [Dockerfile](Dockerfile) e construa
+  (`docker compose build`, ou `docker build -t wyoming-camoes .`). O build volta a acrescentar o `without_timestamps` ao
+  ficheiro da versão nova; pára com uma mensagem se o ficheiro mudou e o patch já não encaixa, e não faz nada se a
+  versão nova já passar a opção.
+- **Teste o primeiro arranque** antes de trocar, num contentor descartável sem volume, porque a conversão depende das
+  versões do transformers e do CTranslate2 da imagem:
 
   ```bash
-  docker run --rm -p 10301:10300 wyoming-camoes
+  docker run --rm wyoming-camoes
   ```
 
   Aguarde pelo `INFO:__main__:Ready`.
-- **Trocar**: `docker compose up -d` com a imagem nova. O volume guarda o modelo convertido: nada é descarregado ou
-  convertido outra vez.
+- **Trocar**: `docker compose up -d` (sem compose: `docker rm -f wyoming-camoes` e o `docker run` do início rápido). O
+  volume guarda o modelo convertido: nada é descarregado ou convertido outra vez.
 - **Versão nova do CAMÕES**: apague o modelo convertido e reinicie; o arranque seguinte converte de novo (6 GB de
   download, 8 GB de RAM):
 
