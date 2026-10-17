@@ -1,7 +1,7 @@
 # wyoming-camoes
 
 Reconhecimento de voz em **português europeu** para o Home Assistant: o modelo
-[CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr) (Whisper afinado pelo projecto [AMALIA](https://amaliallm.pt)),
+[CAMÕES](https://huggingface.co/amalia-llm/CAMOES-whisper-asr) (Whisper afinado pelo projeto [AMALIA](https://amaliallm.pt)),
 servido pelo [wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper) oficial através do protocolo
 [Wyoming](https://github.com/OHF-Voice/wyoming).
 
@@ -57,7 +57,7 @@ linha de comandos têm prioridade sobre as variáveis. As úteis:
 | `WYO_WHISPER_CPU_THREADS` | `4` | threads para a inferência; use os núcleos físicos da máquina |
 | `WYO_WHISPER_URI` | `tcp://0.0.0.0:10300` | endereço de escuta (o healthcheck segue esta variável, não um argumento `--uri`) |
 | `WYO_WHISPER_BEAM_SIZE` | `1` | 1 é o mais rápido |
-| `WYO_WHISPER_LANGUAGE` | `pt` | `auto` detecta a língua |
+| `WYO_WHISPER_LANGUAGE` | `pt` | `auto` deteta a língua |
 | `WYO_WHISPER_COMPUTE_TYPE` | `int8` | tipo de cálculo do CTranslate2; int8 para CPU |
 
 Variáveis do primeiro arranque:
@@ -79,11 +79,11 @@ Ryzen 9 9900X, 12 threads, 2026-10:
 
 A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
 
-## Actualizar
+## Atualizar
 
 - **Versão nova do servidor oficial**: altere `WYOMING_WHISPER_VERSION` no [Dockerfile](Dockerfile) e construa
   (`docker compose build`, ou `docker build -t wyoming-camoes .`). O build volta a acrescentar o `without_timestamps` ao
-  ficheiro da versão nova; pára com uma mensagem se o ficheiro mudou e o patch já não encaixa, e não faz nada se a
+  ficheiro da versão nova; falha com uma mensagem se o ficheiro mudou e o patch já não encaixa, e não faz nada se a
   versão nova já passar a opção.
 - **Teste o primeiro arranque** antes de trocar, num contentor descartável sem volume, porque a conversão depende das
   versões do transformers e do CTranslate2 da imagem:
@@ -103,7 +103,7 @@ A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
   ```
 
 - **Publicar** (quem mantém o repositório): uma tag `vX.Y.Z` faz o [workflow](.github/workflows/image.yml) construir as
-  duas arquitecturas e enviá-las para o `ghcr.io`.
+  duas arquiteturas e enviá-las para o `ghcr.io`.
 
 ## Licença e créditos
 
@@ -115,6 +115,6 @@ pesos**: é o seu contentor que os descarrega do Hugging Face no primeiro arranq
 a transcrição de português europeu, investigação e avaliação de ASR, demonstrações e protótipos; para outros usos,
 confirme os termos com os autores.
 
-O CAMÕES é do projecto AMALIA e do benchmark CAMÕES (ASRU 2025) — a citação está no
-[cartão do modelo](https://huggingface.co/amalia-llm/CAMOES-whisper-asr). Este projecto não é afiliado ao AMALIA, à Open
+O CAMÕES é do projeto AMALIA e do benchmark CAMÕES (ASRU 2025) — a citação está no
+[cartão do modelo](https://huggingface.co/amalia-llm/CAMOES-whisper-asr). Este projeto não é afiliado ao AMALIA, à Open
 Home Foundation nem à OpenAI.
