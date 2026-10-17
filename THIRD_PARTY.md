@@ -3,9 +3,9 @@
 ## wyoming-faster-whisper (base image and patched file)
 
 The image builds on `rhasspy/wyoming-whisper`, from
-[OHF-Voice/wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper).
-`patches/faster_whisper_handler.py` is that project's file from version 3.8.1 with one line added
-(`"without_timestamps": True`). It is used under the MIT licence:
+[OHF-Voice/wyoming-faster-whisper](https://github.com/OHF-Voice/wyoming-faster-whisper), and at build time
+adds one argument (`"without_timestamps": True`) to that project's `faster_whisper_handler.py` inside the
+image, with `patches/without_timestamps.py`. The project is used under the MIT licence:
 
 > MIT License — Copyright (c) 2025 Michael Hansen
 

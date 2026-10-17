@@ -1,5 +1,5 @@
 # Builds the image for amd64 and arm64 and pushes it to ghcr.io/<owner>/wyoming-camoes on a version tag (v1.2.3), or by hand.
-# The Dockerfile only copies files onto the multi-arch base image, so no emulation (QEMU) is needed for arm64.
+# The Dockerfile's one RUN step (the without_timestamps patch) runs under QEMU for arm64.
 name: image
 
 on:
@@ -16,6 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+
+      - uses: docker/setup-qemu-action@v3
 
       - uses: docker/setup-buildx-action@v3
 

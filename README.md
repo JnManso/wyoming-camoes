@@ -21,7 +21,8 @@ Esta imagem é a do servidor oficial (`rhasspy/wyoming-whisper:3.8.1`) com duas 
 - **no primeiro arranque**, descarrega o CAMÕES do Hugging Face, converte-o para CTranslate2 int8 com o conversor que a imagem já
   traz e guarda só o modelo convertido (1,5 GB) no volume `/data`. Os arranques seguintes demoram segundos;
 - **transcreve sem timestamps**: com eles (o padrão do faster-whisper), o CAMÕES escreve lixo antes da primeira palavra
-  (*", fechem…"*, *"rar o banheiro…"*). É uma linha no ficheiro do servidor ([`patches/`](patches/faster_whisper_handler.py)).
+  (*", fechem…"*, *"rar o banheiro…"*). É um argumento acrescentado ao ficheiro do servidor durante o build
+  ([`patches/without_timestamps.py`](patches/without_timestamps.py)).
 
 Português por omissão, int8, beam 1 (como no exemplo do próprio cartão do modelo).
 
@@ -84,9 +85,27 @@ Ryzen 9 9900X, CPU, 12 threads, 2026-10-16:
 A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada. Num Raspberry Pi, um modelo do tamanho do large-v3 deverá
 ser lento demais para comandos de voz (não medido).
 
+### Actualizar
+
+- **Versão nova do servidor oficial** (`rhasspy/wyoming-whisper`): muda `WYOMING_WHISPER_VERSION` no
+  [Dockerfile](Dockerfile) e reconstrói (`docker build -t wyoming-camoes .`). O build volta a acrescentar o
+  `without_timestamps` ao ficheiro da versão nova. Se esse ficheiro tiver mudado e o patch já não encaixar, o build
+  pára e diz porquê. Se a versão nova já passar a opção, diz que não há nada a mudar.
+- **Antes de trocar**, experimenta o primeiro arranque com um volume vazio, porque é aí que a conversão corre e
+  depende das versões do transformers e do CTranslate2 da imagem:
+  `docker run --rm -e WYO_WHISPER_URI=tcp://0.0.0.0:10301 -p 10301:10301 wyoming-camoes` — espera pelo
+  `INFO:__main__:Ready`.
+- **Trocar**: `docker compose up -d` com a imagem nova (`docker compose pull` antes, se usares a publicada). O volume
+  guarda o modelo convertido: não volta a descarregar nem a converter.
+- **Um CAMÕES novo** (se o AMALIA publicar outra versão): apaga o modelo convertido e reinicia; o arranque seguinte
+  converte outra vez (6 GB, 8 GB de RAM):
+  `docker run --rm -v wyoming-camoes:/data --entrypoint rm wyoming-camoes -rf /data/camoes-ct2-int8`
+- **Publicar** (quem mantém o repositório): uma tag `vX.Y.Z` faz o [workflow](.github/workflows/image.yml)
+  construir as duas arquitecturas e enviar para o `ghcr.io`.
+
 ### Licença e créditos
 
-O código deste repositório (Dockerfile, entrypoint, documentação) é [MIT](LICENSE). O ficheiro em `patches/` é do
+O código deste repositório (Dockerfile, entrypoint, patch, documentação) é [MIT](LICENSE). A imagem de base é a do
 wyoming-faster-whisper, MIT. Ver [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ⚠️ **O cartão do CAMÕES não declara licença** (verificado a 2026-10-16). Por isso a imagem **nunca inclui os pesos**: é o seu
@@ -112,7 +131,8 @@ This image is the official server's (`rhasspy/wyoming-whisper:3.8.1`) with two a
 - **on its first start** it downloads CAMÕES from Hugging Face, converts it to CTranslate2 int8 with the converter the image
   already carries, and keeps only the converted model (1.5 GB) in the `/data` volume. Later starts take seconds;
 - **it transcribes without timestamps**: with them on (faster-whisper's default) CAMÕES writes junk before the first word
-  (*", fechem…"*, *"rar o banheiro…"*). One line in the server's file ([`patches/`](patches/faster_whisper_handler.py)).
+  (*", fechem…"*, *"rar o banheiro…"*). One argument added to the server's file at build time
+  ([`patches/without_timestamps.py`](patches/without_timestamps.py)).
 
 Portuguese by default, int8, beam 1 (as in the model card's own example).
 
@@ -172,9 +192,27 @@ Ryzen 9 9900X, CPU, 12 threads, 2026-10-16:
 The image is built for `amd64` and `arm64`; only `amd64` has been tested. On a Raspberry Pi a model the size of large-v3 is likely
 too slow for voice commands (not measured).
 
+### Updating
+
+- **A new version of the official server** (`rhasspy/wyoming-whisper`): change `WYOMING_WHISPER_VERSION` in the
+  [Dockerfile](Dockerfile) and rebuild (`docker build -t wyoming-camoes .`). The build adds `without_timestamps` to
+  the new version's file again. If that file changed and the patch no longer fits, the build stops and says why; if
+  the new version already passes the option, it says there is nothing to change.
+- **Before switching**, try the first start on an empty volume, because that is where the conversion runs, and it
+  depends on the image's transformers and CTranslate2 versions:
+  `docker run --rm -e WYO_WHISPER_URI=tcp://0.0.0.0:10301 -p 10301:10301 wyoming-camoes` — wait for
+  `INFO:__main__:Ready`.
+- **Switching**: `docker compose up -d` with the new image (`docker compose pull` first, if you use the published
+  one). The volume keeps the converted model: nothing is downloaded or converted again.
+- **A new CAMÕES** (if AMALIA publishes another version): delete the converted model and restart; the next start
+  converts again (6 GB, 8 GB of RAM):
+  `docker run --rm -v wyoming-camoes:/data --entrypoint rm wyoming-camoes -rf /data/camoes-ct2-int8`
+- **Publishing** (whoever maintains the repository): a `vX.Y.Z` tag makes the [workflow](.github/workflows/image.yml)
+  build both architectures and push them to `ghcr.io`.
+
 ### Licence and credits
 
-This repository's code (Dockerfile, entrypoint, documentation) is [MIT](LICENSE). The file in `patches/` is
+This repository's code (Dockerfile, entrypoint, patch, documentation) is [MIT](LICENSE). The base image is
 wyoming-faster-whisper's, MIT. See [THIRD_PARTY.md](THIRD_PARTY.md).
 
 ⚠️ **The CAMÕES model card declares no licence** (checked 2026-10-16). So the image **never contains the weights**: your container
