@@ -75,7 +75,7 @@ Ryzen 9 9900X, 12 threads, 2026-10:
 - Cerca de 2 s por comando de voz curto, ida e volta pelo Home Assistant.
 - Memória: 1,6 GiB com o modelo carregado, até 2,3 GiB a transcrever; pico de 7 GiB na conversão do primeiro
   arranque.
-- Primeiro arranque: cerca de um minuto numa ligação rápida, a maior parte no download de 6 GB.
+- Primeiro arranque: cerca de um minuto numa ligação rápida, a maior parte a descarregar os 6 GB.
 
 A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
 
@@ -95,8 +95,8 @@ A imagem é construída para `amd64` e `arm64`; só a `amd64` foi testada.
   Aguarde pelo `INFO:__main__:Ready`.
 - **Trocar**: `docker compose up -d` (sem compose: `docker rm -f wyoming-camoes` e o `docker run` do início rápido). O
   volume guarda o modelo convertido: nada é descarregado ou convertido outra vez.
-- **Versão nova do CAMÕES**: apague o modelo convertido e reinicie; o arranque seguinte converte de novo (6 GB de
-  download, 8 GB de RAM):
+- **Versão nova do CAMÕES**: apague o modelo convertido e reinicie; o arranque seguinte converte de novo (6 GB a
+  descarregar, 8 GB de RAM):
 
   ```bash
   docker run --rm -v wyoming-camoes:/data --entrypoint rm wyoming-camoes -rf /data/camoes-ct2-int8
