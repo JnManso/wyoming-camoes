@@ -1,16 +1,18 @@
-# wyoming-camoes - European-Portuguese speech-to-text for Home Assistant. Start with `docker compose up -d`, then follow the
-# first start with `docker logs -f wyoming-camoes`: about 6 GB to download and 8 GB of free RAM while it converts the model.
+# wyoming-camoes - European-Portuguese speech-to-text for Home Assistant.
+# Copy to compose.yaml and run `docker compose up -d`. Follow the first start with `docker logs -f wyoming-camoes`:
+# about 6 GB to download and 8 GB of free RAM while it converts the model.
 services:
   wyoming-camoes:
-    image: ghcr.io/jnmanso/wyoming-camoes:latest
+    build: .
+    image: wyoming-camoes
     container_name: wyoming-camoes
     restart: unless-stopped
     ports:
       # Wyoming has no authentication, and Docker's published ports bypass ufw: restrict this port to Home Assistant,
-      # or use `network_mode: host` instead so the host's firewall decides.
+      # or use `network_mode: host` instead so the host's firewall applies.
       - "10300:10300"
     environment:
-      # The physical cores to give it (the server's default is 4).
+      # CPU threads for inference (the server's default is 4).
       WYO_WHISPER_CPU_THREADS: "8"
     volumes:
       # The converted model, 1.5 GB, made on the first start and kept for the next ones.
