@@ -115,6 +115,6 @@ pesos**: é o seu contentor que os descarrega do Hugging Face no primeiro arranq
 a transcrição de português europeu, investigação e avaliação de ASR, demonstrações e protótipos; para outros usos,
 confirme os termos com os autores.
 
-O CAMÕES é do projeto AMALIA e do benchmark CAMÕES (ASRU 2025) — a citação está no
+O CAMÕES é do projeto AMALIA e do benchmark CAMÕES (ASRU 2025) — a citação está nas
 [características do modelo](https://huggingface.co/amalia-llm/CAMOES-whisper-asr). Este projeto não é afiliado ao AMALIA, à Open
 Home Foundation nem à OpenAI.
